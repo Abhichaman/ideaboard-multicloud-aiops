@@ -1,0 +1,21 @@
+# Python & Virtual Env
+.venv/
+__pycache__/
+*.pyc
+
+# Node / Frontend
+node_modules/
+frontend/node_modules/
+frontend/build/
+
+# Terraform Binaries & State Files (Important!)
+**/.terraform/
+*.tfstate
+*.tfstate.*
+crash.log
+*.tfvars.json
+
+# Secrets & Temp Files
+.env
+*.json
+*tmp*
