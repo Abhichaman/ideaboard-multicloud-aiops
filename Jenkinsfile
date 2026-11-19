@@ -45,21 +45,22 @@ pipeline {
             }
         }
 
-        stage('3. Deploy & AI Ops on GCP (GKE)') {
+      stage('3. Deploy & AI Ops on GCP (GKE)') {
             steps {
                 withCredentials([string(credentialsId: 'gemini-api-key', variable: 'GEMINI_API_KEY')]) {
                     sh '''
-                        # 1. Connect to GKE & Deploy
+                        # 1. Connect to GKE & Deploy Exact Build Image Tag
                         gcloud container clusters get-credentials $GKE_CLUSTER --zone $GKE_ZONE --project $GCP_PROJECT
                         kubectl apply -k k8s/overlays/gcp
-                        kubectl rollout restart deployment/backend deployment/frontend
+                        kubectl set image deployment/backend backend=$DOCKER_USER/ideaboard-backend:$IMAGE_TAG
+                        kubectl set image deployment/frontend frontend=$DOCKER_USER/ideaboard-frontend:$IMAGE_TAG
                         kubectl rollout status deployment/backend deployment/frontend --timeout=120s
 
-                        # 2.  AI Dynamic Scaling
+                        # 2.AI Dynamic Scaling
                         .venv/bin/python ai-scripts/generate_config.py
                         kubectl rollout status deployment/backend deployment/frontend --timeout=120s
 
-                        # 3.  AI Health Check & Auto-Rollback
+                        # 3.AI Health Check & Auto-Rollback
                         .venv/bin/python ai-scripts/health_guard.py
                     '''
                 }
@@ -70,23 +71,23 @@ pipeline {
             steps {
                 withCredentials([string(credentialsId: 'gemini-api-key', variable: 'GEMINI_API_KEY')]) {
                     sh '''
-                        # 1. Connect to EKS & Deploy
+                        # 1. Connect to EKS & Deploy Exact Build Image Tag
                         aws eks update-kubeconfig --region $AWS_REGION --name $EKS_CLUSTER
                         kubectl apply -k k8s/overlays/aws
-                        kubectl rollout restart deployment/backend deployment/frontend
+                        kubectl set image deployment/backend backend=$DOCKER_USER/ideaboard-backend:$IMAGE_TAG
+                        kubectl set image deployment/frontend frontend=$DOCKER_USER/ideaboard-frontend:$IMAGE_TAG
                         kubectl rollout status deployment/backend deployment/frontend --timeout=120s
 
-                        # 2. AI Dynamic Scaling
+                        # 2.AI Dynamic Scaling
                         .venv/bin/python ai-scripts/generate_config.py
                         kubectl rollout status deployment/backend deployment/frontend --timeout=120s
 
-                        # 3. AI Health Check & Auto-Rollback
+                        # 3.AI Health Check & Auto-Rollback
                         .venv/bin/python ai-scripts/health_guard.py
                     '''
                 }
             }
         }
-    }
 
     post {
         always {
