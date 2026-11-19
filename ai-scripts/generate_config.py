@@ -14,7 +14,7 @@ Reply ONLY in raw JSON format like: {{"backend": 1, "frontend": 1, "reason": "sh
 """
 
 # 3. Call AI & Parse JSON
-response = client.models.generate_content(model="gemini-3.8-flash", contents=prompt)
+response = client.models.generate_content(model="gemini-2.5-flash", contents=prompt)
 clean_json = response.text.strip().removeprefix("```json").removesuffix("```").strip()
 config = json.loads(clean_json)
 
