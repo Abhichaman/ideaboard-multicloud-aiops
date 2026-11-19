@@ -18,7 +18,7 @@ Pods:\n{pods}\nLogs:\n{logs}
 Reply ONLY in raw JSON format like: {{"healthy": true, "summary": "short reason"}}
 """
 
-response = client.models.generate_content(model="gemini-3.8-flash", contents=prompt)
+response = client.models.generate_content(model="gemini-2.5-flash", contents=prompt)
 clean_json = response.text.strip().removeprefix("```json").removesuffix("```").strip()
 result = json.loads(clean_json)
 
