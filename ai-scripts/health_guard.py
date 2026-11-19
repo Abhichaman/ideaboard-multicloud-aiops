@@ -7,11 +7,11 @@ from google import genai
 client = genai.Client(api_key=os.environ["GEMINI_API_KEY"])
 time.sleep(10)  # Pods start hone ka wait
 
-# 1. Cluster status aur logs collect karein
+# 1. Cluster status aur logs collect 
 pods = subprocess.getoutput("kubectl get pods")
 logs = subprocess.getoutput("kubectl logs -l app=backend --tail=20")
 
-# 2. AI se health check karwayein
+# 2. AI health check 
 prompt = f"""
 Check if this Kubernetes deployment is healthy based on pods and logs.
 Pods:\n{pods}\nLogs:\n{logs}
@@ -24,7 +24,7 @@ result = json.loads(clean_json)
 
 print("AI Health Report:", result)
 
-# 3. Agar unhealthy hai toh Auto-Rollback
+# 3. If unhealthy then Auto-Rollback
 if not result["healthy"]:
     print("Error detected! Rolling back deployment...")
     subprocess.run(["kubectl", "rollout", "undo", "deployment/backend"])
