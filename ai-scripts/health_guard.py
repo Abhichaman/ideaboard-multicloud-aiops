@@ -5,7 +5,7 @@ import subprocess
 from google import genai
 
 client = genai.Client(api_key=os.environ["GEMINI_API_KEY"])
-time.sleep(10)  # Pods start hone ka wait
+time.sleep(10)  
 
 # 1. Cluster status aur logs collect 
 pods = subprocess.getoutput("kubectl get pods")
